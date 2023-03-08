@@ -11,6 +11,7 @@ const ButtonList = () => {
     "trending",
     "most liked",
     "gaming",
+    "comedy",
   ];
 
   return (
