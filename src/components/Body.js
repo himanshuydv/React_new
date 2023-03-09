@@ -1,16 +1,12 @@
 import React from "react";
-import ButtonList from "./ButtonList";
-import MainContainer from "./MainContainer";
+import { Outlet } from "react-router-dom";
+import Sidebar from "./Sidebar";
 
 const Body = () => {
   return (
-    <div className="flex-col space-y-4">
-      <div>
-        <ButtonList />
-      </div>
-      <div className="space-x-5">
-        <h1>MainContainer</h1>
-      </div>
+    <div className="flex">
+      <Sidebar />
+      <Outlet />
     </div>
   );
 };
