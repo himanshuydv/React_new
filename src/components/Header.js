@@ -1,9 +1,26 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { toggleMenu } from "../utils/appSlice";
+import { YOUTUBE_SEARCH_API } from "../utils/Constants";
 
 const Header = () => {
   const dispatch = useDispatch();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => getSearchSuggestions(), 200);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [searchQuery]);
+
+  const getSearchSuggestions = async () => {
+    const data = await fetch(YOUTUBE_SEARCH_API + searchQuery);
+    const json = await data.json();
+    setSuggestions(json[1]);
+  };
 
   const toggleMenuHandler = () => {
     dispatch(toggleMenu());
@@ -25,14 +42,26 @@ const Header = () => {
         />
       </div>
       <div className="grid-cols-10">
-        <input
-          className="border border-gray-300 rounded-l-3xl p-2 w-96"
-          type="text"
-          placeholder="Search"
-        />
-        <button className="border border-gray-300 bg-gray-300 rounded-r-3xl p-2">
-          Search
-        </button>
+        <div>
+          <input
+            className="border border-gray-300 rounded-l-3xl p-2 w-96"
+            type="text"
+            placeholder="Search"
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <button className="border border-gray-300 bg-gray-300 rounded-r-3xl p-2">
+            Search
+          </button>
+        </div>
+        <div className="fixed bg-white border-gray-100 px-5 py-2 shadow-lg rounded-lg w-96">
+          <ul>
+            {suggestions.map((suggestion) => (
+              <li className="hover:bg-gray-100" key={suggestion}>
+                {suggestion}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
       <div className="grid-cols-1">
         <img
