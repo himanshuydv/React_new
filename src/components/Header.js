@@ -1,11 +1,52 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleMenu } from "../utils/appSlice";
+import { YOUTUBE_SEARCH_API } from "../utils/Constants";
+import { cacheResults } from "../utils/searchSlice";
 
 const Header = () => {
+  const dispatch = useDispatch();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+
+  const searchCache = useSelector((store) => store.search);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchCache[searchQuery]) {
+        setSuggestions(searchCache[searchQuery]);
+      } else {
+        getSearchSuggestions();
+      }
+    }, 200);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [searchQuery]);
+
+  const getSearchSuggestions = async () => {
+    console.log("Api" + searchQuery);
+    const data = await fetch(YOUTUBE_SEARCH_API + searchQuery);
+    const json = await data.json();
+    setSuggestions(json[1]);
+    dispatch(
+      cacheResults({
+        [searchQuery]: json[1],
+      })
+    );
+  };
+
+  const toggleMenuHandler = () => {
+    dispatch(toggleMenu());
+  };
+
   return (
     <div className="grid grid-flow-col p-4 m-2 shadow-lg">
       <div className="flex col-span-1 space-x-5 ">
         <img
-          className="h-7 "
+          onClick={() => toggleMenuHandler()}
+          className="h-7 cursor-pointer "
           alt="menu"
           src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAARVBMVEX///8jHyAgHB0OBQgMAAWlpKQpJSaenZ309PUAAAAIAAD8/Pz5+fna2tqop6dvbW1oZmevrq4tKivFxMQYExRiYGC+vr7Dc4WrAAABB0lEQVR4nO3cS3LCMBAFQGIIIBPbhN/9jxqSyiIsTUnlydB9g1eSNV5MvdUKAAAAAAAAAAAAAAAAXtEwvscwDk3yHabSb2Loy/TRIOHUv8XRH+sHHMrSqR6U+hd1jHSE90P8lHC2/Lc0/0vzMy3WMdynxaFBwu+Jv4uh0cQHAAAAAAAAAIB59jG0ijdcT9sYTtcmK0PncumiuJRz/YD7bbf0ut4f3br+GvQt2PblrXrC3WbpUA/6sXrC/GeY/zvM/5aGmofHZiu0S//M/GoVDwAAAAAAAAAAZsjeuRerN1HL7hPy95fm76DNnzD/Lc3/0rxAJ3v+Xn0AAAAAAAAAAAAAAAD4T74AYhs1O+vt3ioAAAAASUVORK5CYII="
         />
@@ -16,14 +57,26 @@ const Header = () => {
         />
       </div>
       <div className="grid-cols-10">
-        <input
-          className="border border-gray-300 rounded-l-3xl p-2 w-96"
-          type="text"
-          placeholder="Search"
-        />
-        <button className="border border-gray-300 bg-gray-300 rounded-r-3xl p-2">
-          Search
-        </button>
+        <div>
+          <input
+            className="border border-gray-300 rounded-l-3xl p-2 w-96"
+            type="text"
+            placeholder="Search"
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <button className="border border-gray-300 bg-gray-300 rounded-r-3xl p-2">
+            Search
+          </button>
+        </div>
+        <div className="fixed bg-white border-gray-100 px-5 py-2 shadow-lg rounded-lg w-96">
+          <ul>
+            {suggestions.map((suggestion) => (
+              <li className="hover:bg-gray-100" key={suggestion}>
+                {suggestion}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
       <div className="grid-cols-1">
         <img
