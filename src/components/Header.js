@@ -68,7 +68,7 @@ const Header = () => {
             Search
           </button>
         </div>
-        <div className="fixed bg-white border-gray-100 px-5 py-2 shadow-lg rounded-lg w-96">
+        <div className="fixed bg-white px-5 py-2 shadow-lg rounded-lg w-96">
           <ul>
             {suggestions.map((suggestion) => (
               <li className="hover:bg-gray-100" key={suggestion}>
