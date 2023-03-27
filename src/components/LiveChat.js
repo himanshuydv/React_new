@@ -23,8 +23,6 @@ const LiveChat = () => {
     return () => clearInterval(i);
   }, []);
 
-  const handleChatMessage = () => {};
-
   return (
     <>
       <div className="h-[500px] w-full border border-black mx-2 rounded-lg bg-slate-100 overflow-y-scroll flex flex-col-reverse">
