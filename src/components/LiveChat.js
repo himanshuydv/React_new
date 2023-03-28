@@ -8,10 +8,8 @@ const LiveChat = () => {
   const [textMessage, setTextMessage] = useState("");
   const dispatch = useDispatch();
   const chatMessage = useSelector((store) => store.chat.message);
-  console.log(chatMessage);
   useEffect(() => {
     const i = setInterval(() => {
-      console.log("API Polling");
       dispatch(
         addMessage({
           name: generateRandomName(),

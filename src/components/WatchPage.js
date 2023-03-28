@@ -1,18 +1,27 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { closeMenu } from "../utils/appSlice";
+import { YOUTUBE_CHANNEL_API } from "../utils/Constants";
 import CommentsContainer from "./CommentsContainer";
 import LiveChat from "./LiveChat";
 
 const WatchPage = () => {
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
-  console.log(searchParams);
+  const [channelInfo, setChannelInfo] = useState();
+  console.log(searchParams.get("v"));
 
   useEffect(() => {
     dispatch(closeMenu());
+    getChannelData();
   }, []);
+
+  const getChannelData = async () => {
+    const data = await fetch(YOUTUBE_CHANNEL_API);
+    const json = await data.json();
+    console.log(json);
+  };
 
   return (
     <div className="flex flex-col w-full">
@@ -27,6 +36,7 @@ const WatchPage = () => {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
           ></iframe>
+          {searchParams.get("v")}
         </div>
         <LiveChat />
       </div>
