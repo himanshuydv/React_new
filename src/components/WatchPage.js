@@ -9,7 +9,8 @@ import LiveChat from "./LiveChat";
 const WatchPage = () => {
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
-  const [channelInfo, setChannelInfo] = useState();
+  const [channelInfo, setChannelInfo] = useState([]);
+  const { statistics } = channelInfo;
   console.log(searchParams.get("v"));
 
   useEffect(() => {
@@ -20,7 +21,8 @@ const WatchPage = () => {
   const getChannelData = async () => {
     const data = await fetch(YOUTUBE_CHANNEL_API);
     const json = await data.json();
-    console.log(json);
+    console.log(json.items[0]);
+    setChannelInfo(json.items[0]);
   };
 
   return (
@@ -36,9 +38,20 @@ const WatchPage = () => {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
           ></iframe>
-          {searchParams.get("v")}
         </div>
         <LiveChat />
+      </div>
+      <div className="p-5 ">
+        <h1 className="font-bold text-3xl">
+          {channelInfo.snippet?.localized?.title}
+        </h1>
+        <div className="flex p-2 space-x-4">
+          <h1 className="font-bold text-lg">
+            {channelInfo.snippet?.channelTitle}
+          </h1>
+          <h1>{channelInfo.statistics?.likeCount} Likes</h1>
+          <h1>{channelInfo.statistics?.viewCount} Views</h1>
+        </div>
       </div>
       <div>
         <CommentsContainer />
