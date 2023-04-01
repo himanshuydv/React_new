@@ -2,28 +2,32 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { closeMenu } from "../utils/appSlice";
-import { YOUTUBE_CHANNEL_API } from "../utils/Constants";
+import { GOOGLE_API_KEY } from "../utils/Constants";
 import CommentsContainer from "./CommentsContainer";
 import LiveChat from "./LiveChat";
+import VideoDetailsTab from "./VideoDetailsTab";
 
 const WatchPage = () => {
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
-  const [channelInfo, setChannelInfo] = useState([]);
-  const { statistics } = channelInfo;
-  console.log(searchParams.get("v"));
+  const [videoInfo, setVideoinfo] = useState([]);
 
   useEffect(() => {
     dispatch(closeMenu());
-    getChannelData();
+    getVideoData();
   }, []);
 
-  const getChannelData = async () => {
-    const data = await fetch(YOUTUBE_CHANNEL_API);
+  const getVideoData = async () => {
+    const data = await fetch(
+      `https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${searchParams.get(
+        "v"
+      )}&key=${GOOGLE_API_KEY}`
+    );
     const json = await data.json();
     console.log(json.items[0]);
-    setChannelInfo(json.items[0]);
+    setVideoinfo(json.items[0]);
   };
+  if (!videoInfo) return null;
 
   return (
     <div className="flex flex-col w-full">
@@ -41,20 +45,9 @@ const WatchPage = () => {
         </div>
         <LiveChat />
       </div>
-      <div className="p-5 ">
-        <h1 className="font-bold text-3xl">
-          {channelInfo.snippet?.localized?.title}
-        </h1>
-        <div className="flex p-2 space-x-4">
-          <h1 className="font-bold text-lg">
-            {channelInfo.snippet?.channelTitle}
-          </h1>
-          <h1>{channelInfo.statistics?.likeCount} Likes</h1>
-          <h1>{channelInfo.statistics?.viewCount} Views</h1>
-        </div>
-      </div>
+      <VideoDetailsTab info={videoInfo} />
       <div>
-        <CommentsContainer />
+        <CommentsContainer info={videoInfo} />
       </div>
     </div>
   );

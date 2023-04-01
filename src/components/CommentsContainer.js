@@ -76,8 +76,8 @@ const commentsData = [
 
 const CommentsList = ({ comments }) => {
   return comments.map((comment, index) => (
-    <div>
-      <Comment key={index} data={comment} />
+    <div key={index}>
+      <Comment data={comment} />
       <div className="mx-5 px-5 border border-l-black">
         <CommentsList comments={comment.replies} />
       </div>
@@ -85,10 +85,11 @@ const CommentsList = ({ comments }) => {
   ));
 };
 
-const CommentsContainer = () => {
+const CommentsContainer = ({ info }) => {
+  const { statistics } = info;
   return (
     <div className="m-5 p-2">
-      <h1 className="font-bold text-2xl">Comments:</h1>
+      <h1 className=" text-2xl">{statistics?.commentCount} Comments:</h1>
       <CommentsList comments={commentsData} />
     </div>
   );
