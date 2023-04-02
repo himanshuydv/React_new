@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { closeMenu } from "../utils/appSlice";
-import { GOOGLE_API_KEY } from "../utils/Constants";
 import CommentsContainer from "./CommentsContainer";
 import LiveChat from "./LiveChat";
 import VideoDetailsTab from "./VideoDetailsTab";
@@ -21,7 +20,7 @@ const WatchPage = () => {
     const data = await fetch(
       `https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${searchParams.get(
         "v"
-      )}&key=${GOOGLE_API_KEY}`
+      )}&key=${process.env.REACT_APP_GOOGLE_API_KEY}`
     );
     const json = await data.json();
     console.log(json.items[0]);
