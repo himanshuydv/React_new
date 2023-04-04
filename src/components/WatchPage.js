@@ -2,26 +2,31 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { closeMenu } from "../utils/appSlice";
-import { YOUTUBE_CHANNEL_API } from "../utils/Constants";
 import CommentsContainer from "./CommentsContainer";
 import LiveChat from "./LiveChat";
+import VideoDetailsTab from "./VideoDetailsTab";
 
 const WatchPage = () => {
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
-  const [channelInfo, setChannelInfo] = useState();
-  console.log(searchParams.get("v"));
+  const [videoInfo, setVideoinfo] = useState([]);
 
   useEffect(() => {
     dispatch(closeMenu());
-    getChannelData();
+    getVideoData();
   }, []);
 
-  const getChannelData = async () => {
-    const data = await fetch(YOUTUBE_CHANNEL_API);
+  const getVideoData = async () => {
+    const data = await fetch(
+      `https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${searchParams.get(
+        "v"
+      )}&key=${process.env.REACT_APP_GOOGLE_API_KEY}`
+    );
     const json = await data.json();
-    console.log(json);
+    console.log(json.items[0]);
+    setVideoinfo(json.items[0]);
   };
+  if (!videoInfo) return null;
 
   return (
     <div className="flex flex-col w-full">
@@ -36,12 +41,12 @@ const WatchPage = () => {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
           ></iframe>
-          {searchParams.get("v")}
         </div>
         <LiveChat />
       </div>
+      <VideoDetailsTab info={videoInfo} />
       <div>
-        <CommentsContainer />
+        <CommentsContainer info={videoInfo} />
       </div>
     </div>
   );
